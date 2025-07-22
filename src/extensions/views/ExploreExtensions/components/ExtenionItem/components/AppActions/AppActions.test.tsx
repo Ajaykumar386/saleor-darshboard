@@ -27,8 +27,8 @@ describe("Extensions / ExtensionItem / AppActions", () => {
     render(<AppActions isInstalled disabled id="test-id" />);
 
     // Assert
-    expect(screen.getByText("Manage app")).toBeVisible();
-    expect(screen.getByRole("link")).toHaveAttribute("href", "/apps/test-id?");
+    expect(screen.getByText("Manage extension")).toBeVisible();
+    expect(screen.getByRole("link")).toHaveAttribute("href", "/extensions/app/test-id/edit?");
   });
 
   it("should render link to installed app when app is installed", () => {
@@ -37,7 +37,7 @@ describe("Extensions / ExtensionItem / AppActions", () => {
 
     // Assert
     expect(screen.getByText("View details")).toBeVisible();
-    expect(screen.getByRole("link")).toHaveAttribute("href", "/apps/test-id/app?");
+    expect(screen.getByRole("link")).toHaveAttribute("href", "/extensions/app/test-id?");
   });
 
   it("should render install button and link to repository when app is not installed", () => {

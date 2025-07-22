@@ -123,7 +123,7 @@ export function useProductUpdateForm(
     opts.setSelectedCategory,
     opts.categories,
   );
-  const handleAttributeChange = createAttributeChangeHandler(attributes.change, triggerChange);
+  const handleAttributeChange = createAttributeChangeHandler(attributes, triggerChange);
   const handleAttributeMultiChange = createAttributeMultiChangeHandler(
     attributes.change,
     attributes.data,
@@ -174,6 +174,8 @@ export function useProductUpdateForm(
       attributesWithNewFileValue.data,
       opts.referencePages,
       opts.referenceProducts,
+      opts.referenceCollections,
+      opts.referenceCategories,
     ),
     channels,
     description: null,

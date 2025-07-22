@@ -20,6 +20,8 @@ import {
 import useNavigator from "@dashboard/hooks/useNavigator";
 import useNotifier from "@dashboard/hooks/useNotifier";
 import useShop from "@dashboard/hooks/useShop";
+import useCategorySearch from "@dashboard/searches/useCategorySearch";
+import useCollectionSearch from "@dashboard/searches/useCollectionSearch";
 import usePageSearch from "@dashboard/searches/usePageSearch";
 import useProductSearch from "@dashboard/searches/useProductSearch";
 import useWarehouseSearch from "@dashboard/searches/useWarehouseSearch";
@@ -88,7 +90,7 @@ export const ProductVariant: React.FC<ProductVariantCreateProps> = ({ productId,
         status: "success",
         text: intl.formatMessage(messages.variantCreatedSuccess),
       });
-      navigate(productVariantEditUrl(productId, variantId), {
+      navigate(productVariantEditUrl(variantId), {
         resetScroll: true,
       });
     },
@@ -172,7 +174,7 @@ export const ProductVariant: React.FC<ProductVariantCreateProps> = ({ productId,
     updateMetadata,
     updatePrivateMetadata,
   );
-  const handleVariantClick = (id: string) => navigate(productVariantEditUrl(productId, id));
+  const handleVariantClick = (id: string) => navigate(productVariantEditUrl(id));
   const handleAssignAttributeReferenceClick = (attribute: AttributeInput) =>
     navigate(
       productVariantAddUrl(productId, {
@@ -193,6 +195,12 @@ export const ProductVariant: React.FC<ProductVariantCreateProps> = ({ productId,
     search: searchProducts,
     result: searchProductsOpts,
   } = useProductSearch({
+    variables: DEFAULT_INITIAL_SEARCH_DATA,
+  });
+  const { result: searchCategoriesOpts } = useCategorySearch({
+    variables: DEFAULT_INITIAL_SEARCH_DATA,
+  });
+  const { result: searchCollectionsOpts } = useCollectionSearch({
     variables: DEFAULT_INITIAL_SEARCH_DATA,
   });
   const {
@@ -260,6 +268,8 @@ export const ProductVariant: React.FC<ProductVariantCreateProps> = ({ productId,
         onAssignReferencesClick={handleAssignAttributeReferenceClick}
         referencePages={mapEdgesToItems(searchPagesOpts?.data?.search) || []}
         referenceProducts={mapEdgesToItems(searchProductsOpts?.data?.search) || []}
+        referenceCategories={mapEdgesToItems(searchCategoriesOpts?.data?.search) || []}
+        referenceCollections={mapEdgesToItems(searchCollectionsOpts?.data?.search) || []}
         fetchReferencePages={searchPages}
         fetchMoreReferencePages={fetchMoreReferencePages}
         fetchReferenceProducts={searchProducts}
