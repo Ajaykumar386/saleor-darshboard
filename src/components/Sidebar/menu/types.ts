@@ -3,9 +3,10 @@ import { Sprinkles } from "@saleor/macaw-ui-next";
 import { ReactNode } from "react";
 
 export interface SidebarMenuItem {
-  label?: string;
+  label?: string | ReactNode;
   id: string;
   url?: string;
+  matchUrls?: string[];
   permissions?: PermissionEnum[];
   type: "item" | "itemGroup" | "divider";
   icon?: ReactNode;

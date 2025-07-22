@@ -216,6 +216,7 @@ export const STATIC_CONDITIONS = {
     },
   ],
   staffMemberStatus: [{ type: "select", label: "is", value: "input-1" }],
+  attribute: [{ type: "multiselect", label: "in", value: "input-2" }],
 };
 
 export const CONSTRAINTS = {
@@ -276,6 +277,12 @@ export const STATIC_PRODUCT_OPTIONS: LeftOperand[] = [
     label: "IsGiftcard",
     type: "giftCard",
     slug: "giftCard",
+  },
+  {
+    value: "attribute",
+    label: "Attribute",
+    type: "attribute",
+    slug: "attribute",
   },
 ];
 
@@ -433,7 +440,7 @@ export const STATIC_COLLECTION_OPTIONS: LeftOperand[] = [
 export const STATIC_PAGE_OPTIONS: LeftOperand[] = [
   {
     value: "pageTypes",
-    label: "Page types",
+    label: "Model types",
     type: "pageTypes",
     slug: "pageTypes",
   },
@@ -601,6 +608,7 @@ export const STATIC_OPTIONS = [
 export const ATTRIBUTE_INPUT_TYPE_CONDITIONS = {
   DROPDOWN: [{ type: "multiselect", label: "in", value: "input-2" }],
   MULTISELECT: [{ type: "multiselect", label: "in", value: "input-2" }],
+  REFERENCE: [{ type: "multiselect", label: "in", value: "input-2" }],
   BOOLEAN: [{ type: "select", label: "is", value: "input-5" }],
   NUMERIC: [
     { type: "number", label: "is", value: "input-1" },

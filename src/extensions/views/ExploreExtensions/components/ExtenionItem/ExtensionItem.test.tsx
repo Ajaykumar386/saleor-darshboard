@@ -5,6 +5,15 @@ import { FormattedMessageProps } from "react-intl";
 
 import { ExtensionItem } from "./ExtenionItem";
 
+jest.mock("@dashboard/hooks/useNavigator", () => ({
+  __esModule: true,
+  default: jest.fn(() => jest.fn()),
+}));
+
+jest.mock("@dashboard/utils/permissions", () => ({
+  useUserHasPermissions: jest.fn(() => true),
+}));
+
 jest.mock("react-intl", () => ({
   useIntl: jest.fn(() => ({
     formatMessage: jest.fn(x => x.defaultMessage),
@@ -19,6 +28,10 @@ jest.mock("@dashboard/components/Link", () => {
     <a href={href}>{children}</a>
   );
 });
+
+jest.mock("@dashboard/featureFlags", () => ({
+  useFlag: jest.fn(() => ({ enabled: true })),
+}));
 
 jest.mock("@saleor/macaw-ui-next", () => ({
   ...(jest.requireActual("@saleor/macaw-ui-next") as object),

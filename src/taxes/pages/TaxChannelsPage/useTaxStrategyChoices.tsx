@@ -1,4 +1,6 @@
 import { AppUrls } from "@dashboard/apps/urls";
+import { ExtensionsUrls } from "@dashboard/extensions/urls";
+import { useFlag } from "@dashboard/featureFlags";
 import { TaxCalculationStrategy, useTaxStrategyChoicesQuery } from "@dashboard/graphql";
 import useNavigator from "@dashboard/hooks/useNavigator";
 import { Box, Button, ExternalLinkIcon, Option, Text } from "@saleor/macaw-ui-next";
@@ -10,6 +12,7 @@ const flatTaxRateChoice = {
   label: <FlatTaxRateLabel />,
   value: TaxCalculationStrategy.FLAT_RATES,
 };
+// Keep this choice for backward compatibility with Avalara plugin - remove after migration to AvaTax app
 const legacyPluginTaxChoice = {
   label: <PluginLabel />,
   value: "plugin:mirumee.taxes.avalara",
@@ -18,8 +21,14 @@ const legacyPluginTaxChoice = {
 export const useTaxStrategyChoices = () => {
   const { data, loading } = useTaxStrategyChoicesQuery();
   const navigate = useNavigator();
+  const { enabled: areExtensionsEnabled } = useFlag("extensions");
+
   const navigateToAppScreen = (id: string) => {
-    navigate(AppUrls.resolveAppDetailsUrl(id));
+    if (areExtensionsEnabled) {
+      navigate(ExtensionsUrls.resolveEditManifestExtensionUrl(id));
+    } else {
+      navigate(AppUrls.resolveAppDetailsUrl(id));
+    }
   };
 
   const taxAppsChoices =

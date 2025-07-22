@@ -1,15 +1,14 @@
-import { InstallWithManifestFormButton } from "@dashboard/apps/components/InstallWithManifestFormButton";
-import { AppUrls } from "@dashboard/apps/urls";
 import { TopNav } from "@dashboard/components/AppLayout";
+import { useContextualLink } from "@dashboard/components/AppLayout/ContextualLinks/useContextualLink";
 import SearchInput from "@dashboard/components/AppLayout/ListFilters/components/SearchInput";
-import { RequestExtensionsButton } from "@dashboard/extensions/components/RequestExtensionsButton";
-import { useHasManagedAppsPermission } from "@dashboard/hooks/useHasManagedAppsPermission";
-import useNavigator from "@dashboard/hooks/useNavigator";
-import { Box } from "@saleor/macaw-ui-next";
-import React, { useCallback } from "react";
+import { DashboardCard } from "@dashboard/components/Card";
+import { ListPageLayout } from "@dashboard/components/Layouts";
+import { Box, ChevronRightIcon, Text } from "@saleor/macaw-ui-next";
+import React from "react";
 import { useIntl } from "react-intl";
 
 import { headerTitles, messages } from "../../messages";
+import { ExploreExtensionsActions } from "./components/ExploreExtensionsActions";
 import { ExtensionsList } from "./components/ExtensionsList";
 import { useExploreExtensions } from "./hooks/useExploreExtensions";
 import { useExtensionsFilter } from "./hooks/useExtenstionsFilter";
@@ -17,16 +16,9 @@ import { useExtensionsFilter } from "./hooks/useExtenstionsFilter";
 export const ExploreExtensions = () => {
   const intl = useIntl();
   const { extensions, loading, error } = useExploreExtensions();
-  const { handleQueryChange, query, filteredExtensions } = useExtensionsFilter({ extensions });
-  const { hasManagedAppsPermission } = useHasManagedAppsPermission();
-  const navigate = useNavigator();
+  const subtitle = useContextualLink("extensions");
 
-  const navigateToAppInstallPage = useCallback(
-    (manifestUrl: string) => {
-      navigate(AppUrls.resolveAppInstallUrl(manifestUrl));
-    },
-    [navigate],
-  );
+  const { handleQueryChange, query, filteredExtensions } = useExtensionsFilter({ extensions });
 
   if (error) {
     // We want to show the default error page when app store api does not work
@@ -34,19 +26,26 @@ export const ExploreExtensions = () => {
   }
 
   return (
-    <>
-      <TopNav title={intl.formatMessage(headerTitles.exploreExtensions)}>
-        <Box display="flex" gap={4} alignItems="center">
-          <RequestExtensionsButton />
-          {hasManagedAppsPermission && (
-            <InstallWithManifestFormButton onSubmitted={navigateToAppInstallPage} />
-          )}
+    <ListPageLayout>
+      <TopNav
+        withoutBorder
+        isAlignToRight={false}
+        title={intl.formatMessage(headerTitles.extensions)}
+        subtitle={subtitle}
+      >
+        <Box __flex={1} display="flex" justifyContent="space-between" alignItems="center">
+          <Box display="flex">
+            <Box marginX={3} display="flex" alignItems="center">
+              <ChevronRightIcon />
+            </Box>
+            <Text size={6}>{intl.formatMessage(headerTitles.exploreExtensions)}</Text>
+          </Box>
         </Box>
+        <ExploreExtensionsActions />
       </TopNav>
-      <Box paddingX={6}>
-        <Box __width="370px" marginTop={8} marginBottom={12}>
+      <DashboardCard paddingX={6}>
+        <Box __width="370px">
           <SearchInput
-            withBorder
             size="medium"
             initialSearch={query}
             placeholder={intl.formatMessage(messages.searchPlaceholder)}
@@ -59,7 +58,7 @@ export const ExploreExtensions = () => {
           loading={loading}
           clearSearch={() => handleQueryChange("")}
         />
-      </Box>
-    </>
+      </DashboardCard>
+    </ListPageLayout>
   );
 };

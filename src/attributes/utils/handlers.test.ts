@@ -10,7 +10,7 @@ import {
   AttributeValueDetailsFragment,
   ProductFragment,
 } from "@dashboard/graphql";
-import { FormsetData } from "@dashboard/hooks/useFormset";
+import { FormsetData, UseFormsetOutput } from "@dashboard/hooks/useFormset";
 
 const multipleValueAttributes: FormsetData<AttributeInputData, string[]> = [
   {
@@ -127,7 +127,7 @@ interface CreateAttribute {
   inputType: AttributeInputTypeEnum;
   initialValue?: AttributeValueDetailsFragment[];
   availableValues?: AttributeValueDetailsFragment[];
-  value?: string;
+  value?: string | null;
   isRequired?: boolean;
 }
 
@@ -189,6 +189,8 @@ const createNumericAttribute = (value: string, isRequired?: boolean) =>
   createAttribute({ inputType: AttributeInputTypeEnum.NUMERIC, value, isRequired });
 const createFileAttribute = (value: string, isRequired?: boolean) =>
   createAttribute({ inputType: AttributeInputTypeEnum.FILE, value, isRequired });
+const createDropdownAttribute = (value: string | null, isRequired?: boolean) =>
+  createAttribute({ inputType: AttributeInputTypeEnum.DROPDOWN, value, isRequired });
 
 describe("Multiple select change handler", () => {
   it("is able to select value", () => {
@@ -756,48 +758,106 @@ describe("Sending only changed attributes", () => {
 });
 
 describe("createAttributeChangeHandler", () => {
+  it("should return false when value is false and it is a boolean attribute", () => {
+    // Arrange
+    const formset = {
+      change: jest.fn(),
+      data: [],
+      get: () => ({
+        data: {
+          inputType: AttributeInputTypeEnum.BOOLEAN,
+        },
+      }),
+    } as unknown as UseFormsetOutput<AttributeInputData>;
+    const trigger = jest.fn();
+    const handler = createAttributeChangeHandler(formset, trigger);
+
+    // Act
+    handler("attr-1", false);
+
+    // Assert
+    expect(formset.change).toHaveBeenCalledTimes(1);
+    expect(formset.change).toHaveBeenCalledWith("attr-1", [false]);
+    expect(trigger).toHaveBeenCalledTimes(1);
+  });
+
+  it("should return undefined when value is undefined and it is a boolean attribute", () => {
+    // Arrange
+    const formset = {
+      change: jest.fn(),
+      data: [],
+      get: () => ({
+        data: {
+          inputType: AttributeInputTypeEnum.BOOLEAN,
+        },
+      }),
+    } as unknown as UseFormsetOutput<AttributeInputData>;
+    const trigger = jest.fn();
+    const handler = createAttributeChangeHandler(formset, trigger);
+
+    // Act
+    handler("attr-1", undefined);
+
+    // Assert
+    expect(formset.change).toHaveBeenCalledTimes(1);
+    expect(formset.change).toHaveBeenCalledWith("attr-1", [undefined]);
+    expect(trigger).toHaveBeenCalledTimes(1);
+  });
+
   it("should return empty array when value is empty string", () => {
     // Arrange
-    const change = jest.fn();
+    const formset = {
+      change: jest.fn(),
+      data: [],
+      get: jest.fn(),
+    } as unknown as UseFormsetOutput<AttributeInputData>;
     const trigger = jest.fn();
-    const handler = createAttributeChangeHandler(change, trigger);
+    const handler = createAttributeChangeHandler(formset, trigger);
 
     // Act
     handler("attr-1", "");
 
     // Assert
-    expect(change).toHaveBeenCalledTimes(1);
-    expect(change).toHaveBeenCalledWith("attr-1", []);
+    expect(formset.change).toHaveBeenCalledTimes(1);
+    expect(formset.change).toHaveBeenCalledWith("attr-1", []);
     expect(trigger).toHaveBeenCalledTimes(1);
   });
 
   it("should return empty array when value is null", () => {
     // Arrange
-    const change = jest.fn();
+    const formset = {
+      change: jest.fn(),
+      data: [],
+      get: jest.fn(),
+    } as unknown as UseFormsetOutput<AttributeInputData>;
     const trigger = jest.fn();
-    const handler = createAttributeChangeHandler(change, trigger);
+    const handler = createAttributeChangeHandler(formset, trigger);
 
     // Act
     handler("attr-1", null);
 
     // Assert
-    expect(change).toHaveBeenCalledTimes(1);
-    expect(change).toHaveBeenCalledWith("attr-1", []);
+    expect(formset.change).toHaveBeenCalledTimes(1);
+    expect(formset.change).toHaveBeenCalledWith("attr-1", []);
     expect(trigger).toHaveBeenCalledTimes(1);
   });
 
   it("should return array with value when value not null or undefined or empty string", () => {
     // Arrange
-    const change = jest.fn();
+    const formset = {
+      change: jest.fn(),
+      data: [],
+      get: jest.fn(),
+    } as unknown as UseFormsetOutput<AttributeInputData>;
     const trigger = jest.fn();
-    const handler = createAttributeChangeHandler(change, trigger);
+    const handler = createAttributeChangeHandler(formset, trigger);
 
     // Act
     handler("attr-1", "val-1");
 
     // Assert
-    expect(change).toHaveBeenCalledTimes(1);
-    expect(change).toHaveBeenCalledWith("attr-1", ["val-1"]);
+    expect(formset.change).toHaveBeenCalledTimes(1);
+    expect(formset.change).toHaveBeenCalledWith("attr-1", ["val-1"]);
     expect(trigger).toHaveBeenCalledTimes(1);
   });
 });
@@ -848,5 +908,35 @@ describe("handleDeleteMultipleAttributeValues", () => {
     // Assert
     expect(result).toEqual(["val-1"]);
     expect(deleteAttributeValue).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("prepareAttributesInput", () => {
+  it("should create input with desired values for dropdowns", () => {
+    // Arrange & Act
+    const attribute = createDropdownAttribute("val-1");
+    const prevAttribute = createDropdownAttribute("val-2");
+    const result = prepareAttributesInput({
+      attributes: [attribute],
+      prevAttributes: [prevAttribute],
+      updatedFileAttributes: [],
+    });
+
+    // Assert
+    expect(result).toEqual([{ id: ATTR_ID, values: ["val-1"] }]);
+  });
+
+  it("should create input without null values for dropdowns", () => {
+    // Arrange & Act
+    const attribute = createDropdownAttribute(null);
+    const prevAttribute = createDropdownAttribute("val-1");
+    const result = prepareAttributesInput({
+      attributes: [attribute],
+      prevAttributes: [prevAttribute],
+      updatedFileAttributes: [],
+    });
+
+    // Assert
+    expect(result).toEqual([{ id: ATTR_ID, values: [] }]);
   });
 });

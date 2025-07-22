@@ -1,15 +1,14 @@
-import { AppUrls } from "@dashboard/apps/urls";
 import { attributeListUrl } from "@dashboard/attributes/urls";
 import { categoryListUrl } from "@dashboard/categories/urls";
 import { collectionListUrl } from "@dashboard/collections/urls";
 import { customerListUrl } from "@dashboard/customers/urls";
 import { saleListUrl, voucherListUrl } from "@dashboard/discounts/urls";
+import { ExtensionsUrls } from "@dashboard/extensions/urls";
 import { UseNavigatorResult } from "@dashboard/hooks/useNavigator";
 import { sectionNames } from "@dashboard/intl";
 import { fuzzySearch } from "@dashboard/misc";
-import { menuListUrl } from "@dashboard/navigation/urls";
+import { pageListUrl } from "@dashboard/modeling/urls";
 import { orderDraftListUrl, orderListUrl } from "@dashboard/orders/urls";
-import { pageListUrl } from "@dashboard/pages/urls";
 import { permissionGroupListUrl } from "@dashboard/permissionGroups/urls";
 import { pluginListUrl } from "@dashboard/plugins/urls";
 import { productListUrl } from "@dashboard/products/urls";
@@ -17,6 +16,7 @@ import { productTypeListUrl } from "@dashboard/productTypes/urls";
 import { shippingZonesListUrl } from "@dashboard/shipping/urls";
 import { siteSettingsUrl } from "@dashboard/siteSettings/urls";
 import { staffListUrl } from "@dashboard/staff/urls";
+import { menuListUrl } from "@dashboard/structures/urls";
 import { taxConfigurationListUrl } from "@dashboard/taxes/urls";
 import { languageListUrl } from "@dashboard/translations/urls";
 import { warehouseListUrl } from "@dashboard/warehouses/urls";
@@ -35,8 +35,8 @@ function searchInViews(
 ): QuickSearchActionInput[] {
   const views: View[] = [
     {
-      label: intl.formatMessage(sectionNames.apps),
-      url: AppUrls.resolveAppListUrl(),
+      label: intl.formatMessage(sectionNames.extensions),
+      url: ExtensionsUrls.resolveInstalledExtensionsUrl(),
     },
     {
       label: intl.formatMessage(sectionNames.attributes),
@@ -71,7 +71,7 @@ function searchInViews(
       url: orderListUrl(),
     },
     {
-      label: intl.formatMessage(sectionNames.content),
+      label: intl.formatMessage(sectionNames.models),
       url: pageListUrl(),
     },
     {
