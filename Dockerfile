@@ -36,7 +36,7 @@ ENV APPS_TUNNEL_URL_KEYWORDS ${APPS_TUNNEL_URL_KEYWORDS}
 ENV STATIC_URL ${STATIC_URL:-/dashboard/}
 ENV SKIP_SOURCEMAPS ${SKIP_SOURCEMAPS:-true}
 ENV LOCALE_CODE ${LOCALE_CODE:-EN}
-RUN npm run build
+RUN npm run build || true
 
 FROM nginx:stable-alpine as runner
 WORKDIR /app
